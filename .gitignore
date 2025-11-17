@@ -1,4 +1,4 @@
 node_modules
 site/static/
-!site/static/videojs/.gitkeep
-!site/static/videojs-youtube/.gitkeep
+!site/static/videojs/dist/.gitkeep
+!site/static/videojs-youtube/dist/.gitkeep

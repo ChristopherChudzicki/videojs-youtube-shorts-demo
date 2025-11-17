@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "videojs": "^1.0.0",
+    "videojs-youtube": "^3.0.1"
+  },
+  "scripts": {
+    "build": "cp -r node_modules/video.js/dist site/static/videojs && cp -r node_modules/videojs-youtube/dist site/static/videojs-youtube",
+    "start": "npx serve site"
+  }
+}

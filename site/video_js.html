@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="./static/videojs/dist/video-js.min.css"
+    />
+    <script src="./static/videojs/dist/video.min.js"></script>
+    <script src="./static/videojs-youtube/dist/Youtube.min.js"></script>
+    <style>
+      .vjs-poster {
+        display: none;
+      }
+      .vjs-loading-spinner {
+        display: none !important;
+      }
+      .vjs-big-play-button {
+        display: none !important;
+      }
+      /* Make YouTube iframes non-interactive to prevent control conflicts */
+      .video-js iframe {
+        pointer-events: none;
+      }
+      /* Hide VideoJS control bar */
+      .vjs-control-bar {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>VideoJS YouTube Shorts Demo</h1>
+    <div id="video-group">
+      <video
+        id="vid1"
+        class="video-js vjs-default-skin"
+        controls
+        autoplay
+        width="180"
+        height="320"
+        data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [
+          {
+            "type": "video/youtube",
+            "src": "https://www.youtube.com/embed/yWkxf_Ss-ZM"
+          }
+        ]
+    }'
+      ></video>
+
+      <video
+        id="vid2"
+        class="video-js vjs-default-skin"
+        controls
+        autoplay
+        width="180"
+        height="320"
+        data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [
+          {
+            "type": "video/youtube",
+            "src": "https://www.youtube.com/embed/8_ko7vuwISo"
+          }
+        ]
+    }'
+      ></video>
+
+      <video
+        id="vid3"
+        class="video-js vjs-default-skin"
+        controls
+        autoplay
+        width="180"
+        height="320"
+        data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [
+          {
+            "type": "video/youtube",
+            "src": "https://www.youtube.com/embed/TGMqGCxSJzg"
+          }
+        ]
+    }'
+      ></video>
+
+      <video
+        id="vid4"
+        class="video-js vjs-default-skin"
+        controls
+        autoplay
+        width="180"
+        height="320"
+        data-setup='{
+        "techOrder": ["youtube"],
+        "sources": [
+          {
+            "type": "video/youtube",
+            "src": "https://www.youtube.com/embed/Tx0t0pARBjI"
+          }
+        ]
+    }'
+      ></video>
+    </div>
+
+    <div
+      id="interaction-log"
+      style="
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        font-family: monospace;
+      "
+    >
+      Last interaction: <span id="last-interaction">None</span>
+    </div>
+
+    <div>
+      Video Links:
+      <ul>
+        <li>
+          <a href="https://www.youtube.com/shorts/yWkxf_Ss-ZM"
+            >Is Moore's Law still true today?</a
+          >
+        </li>
+        <li>
+          <a href="https://www.youtube.com/shorts/8_ko7vuwISo"
+            >Every great idea started as a bad idea</a
+          >
+        </li>
+        <li>
+          <a href="https://www.youtube.com/shorts/TGMqGCxSJzg"
+            >Recursions don't have to be scary</a
+          >
+        </li>
+        <li>
+          <a href="https://www.youtube.com/shorts/Tx0t0pARBjI"
+            >How do we learn what we know?</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>This page:</h2>
+      <ol>
+        <li>
+          Uses VideoJS to load 4 youtube videos directly from Youtube Shorts
+          embed code.
+        </li>
+        <li>
+          Supports keyboard controls similar to a vertical video overlay:
+          <ol>
+            <li>Clicking on a video toggles play/pause.</li>
+            <li>
+              Pressing spacebar when a video is focused toggles play/pause.
+            </li>
+            <li>
+              Pressing left/right arrows plays the previous/next video (with
+              wrap-around) and focuses it.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Some technical notes:
+          <ol>
+            <li>
+              VideoJS embeds the YouTube iframe; code prevents interacting with
+              the YouTube iframe because its keyboard controls conflict with the
+              behavior we want.
+            </li>
+            <li>
+              We could probably build this without VideoJS and use the YouTube
+              Player API directly. I suspect VideoJS is wworthwhile. It has
+              better docs, supports multiple technologies if we switch away from
+              youtube as a source, and provides scaffolding for thigns like an
+              overlay image.
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </div>
+    <script>
+      // Initialize all video players and add play event handlers
+      const videoIds = ["vid1", "vid2", "vid3", "vid4"];
+      let currentVideoIndex = null; // Track the current video
+
+      // Function to update interaction log
+      function logInteraction(message) {
+        document.getElementById("last-interaction").textContent = message;
+      }
+
+      videoIds.forEach(function (videoId, index) {
+        const player = videojs(videoId);
+
+        player.ready(function () {
+          // Make the YouTube iframe non-interactive and unfocusable after it loads
+          const iframe = this.el().querySelector("iframe");
+          if (iframe) {
+            iframe.style.pointerEvents = "none";
+            iframe.setAttribute("tabindex", "-1");
+          }
+
+          // Make the video container focusable
+          const videoElement = this.el();
+          videoElement.setAttribute("tabindex", "0");
+
+          // Add click handler to play/pause the video
+          videoElement.addEventListener("click", function () {
+            if (player.paused()) {
+              player.play();
+              logInteraction("Click on " + videoId + " (play)");
+            } else {
+              player.pause();
+              logInteraction("Click on " + videoId + " (pause)");
+            }
+          });
+
+          // Add keydown handler for spacebar
+          videoElement.addEventListener("keydown", function (event) {
+            if (event.key === " " || event.key === "Spacebar") {
+              event.preventDefault(); // Prevent page scroll
+              if (player.paused()) {
+                player.play();
+                logInteraction("Spacebar on " + videoId + " (play)");
+              } else {
+                player.pause();
+                logInteraction("Spacebar on " + videoId + " (pause)");
+              }
+            }
+          });
+
+          // Handler for when play is triggered
+          this.on("play", function () {
+            console.log("Play triggered on " + videoId);
+
+            // Update current video index
+            currentVideoIndex = index;
+
+            // Pause all other videos
+            videoIds.forEach(function (otherId) {
+              if (otherId !== videoId) {
+                videojs(otherId).pause();
+              }
+            });
+          });
+        });
+      });
+
+      // Add keyboard arrow key handlers
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight") {
+          // Move to next video (with wrap-around)
+          if (currentVideoIndex === null) {
+            currentVideoIndex = 0;
+          } else {
+            currentVideoIndex = (currentVideoIndex + 1) % videoIds.length;
+          }
+          const nextPlayer = videojs(videoIds[currentVideoIndex]);
+          nextPlayer.play();
+          nextPlayer.el().focus();
+          logInteraction("Arrow Right -> " + videoIds[currentVideoIndex]);
+        } else if (event.key === "ArrowLeft") {
+          // Move to previous video (with wrap-around)
+          if (currentVideoIndex === null) {
+            currentVideoIndex = videoIds.length - 1;
+          } else {
+            currentVideoIndex =
+              (currentVideoIndex - 1 + videoIds.length) % videoIds.length;
+          }
+          const prevPlayer = videojs(videoIds[currentVideoIndex]);
+          prevPlayer.play();
+          prevPlayer.el().focus();
+          logInteraction("Arrow Left -> " + videoIds[currentVideoIndex]);
+        }
+      });
+    </script>
+  </body>
+</html>

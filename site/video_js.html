@@ -165,12 +165,31 @@
           </ol>
         </li>
         <li>
-          Some technical notes:
+          Potential technical problems::
           <ol>
             <li>
-              VideoJS embeds the YouTube iframe; code prevents interacting with
-              the YouTube iframe because its keyboard controls conflict with the
-              behavior we want.
+              <p>
+                <strong>Conflicting keyboard controls:</strong> VideoJS embeds
+                the YouTube iframe. It has its own keyboard controls, which will
+                conflict with ours.
+              </p>
+
+              <p>
+                This demo skirts the issue by disabling focusing the iframe.
+                However, that causes other issues. The "Subscribe" and "Watch
+                again on youtube" (shown at end of video) buttons are
+                non-functional.
+              </p>
+
+              <p>
+                There are potentially other workarounds, like defocusing the
+                iframe a short time (100ms?) after it gets focused. That may
+                have other disadvantages.
+              </p>
+            </li>
+            <li>
+              We don't currently seem to get ads in embedded youtube videos.
+              Will that always be the case? Not in our control.
             </li>
             <li>
               We could probably build this without VideoJS and use the YouTube
@@ -179,6 +198,7 @@
               youtube as a source, and provides scaffolding for thigns like an
               overlay image.
             </li>
+            <li>Problem: Any</li>
           </ol>
         </li>
       </ol>
